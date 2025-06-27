@@ -68,10 +68,8 @@ async def handle_upload(pdf_file: UploadFile = File(...)):
         # You might want to return an error to the user here
         return RedirectResponse(url="/", status_code=303)
 
-    # Generate a unique ID for this chat session
     chat_id = str(uuid.uuid4())
     
-    # Save the uploaded file
     filepath = os.path.join(UPLOAD_FOLDER, f"{chat_id}.pdf")
     with open(filepath, "wb") as f:
         content = await pdf_file.read()
@@ -87,10 +85,8 @@ async def handle_upload(pdf_file: UploadFile = File(...)):
     vector_store = FAISS.from_documents(texts, embeddings)
     vector_store.save_local(vector_store_path)
 
-    # Initialize conversation history for this new chat
     conversations[chat_id] = {'pdf_filename': pdf_file.filename, 'history': []}
 
-    # Redirect to the chat page for this document
     return RedirectResponse(url=f"/chat/{chat_id}", status_code=303)
 
 @app.get("/chat/{chat_id}", response_class=HTMLResponse)
@@ -109,7 +105,6 @@ async def chat_page(request: Request, chat_id: str):
         "conversation": chat_session['history']
     })
 
-# In main.py
 
 @app.post("/ask/{chat_id}", response_class=RedirectResponse)
 async def ask_question(chat_id: str, question: str = Form(...)):
@@ -120,10 +115,8 @@ async def ask_question(chat_id: str, question: str = Form(...)):
     chat_session = conversations.get(chat_id)
 
     if qa_chain and chat_session:
-        # Use .invoke() instead of calling the chain directly
         result = qa_chain.invoke({"query": question})
         
-        # The rest of the code remains the same, as the output structure is compatible
         answer = result['result']
         
         # Update conversation history
