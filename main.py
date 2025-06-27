@@ -45,7 +45,7 @@ def get_qa_chain(chat_id: str):
     retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 3})
     
     qa_chain = RetrievalQA.from_chain_type(
-        llm=ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.7),
+        llm=ChatOpenAI(model_name="gpt-4-turbo", temperature=0.7),
         chain_type="stuff",
         retriever=retriever,
         return_source_documents=True
@@ -109,6 +109,8 @@ async def chat_page(request: Request, chat_id: str):
         "conversation": chat_session['history']
     })
 
+# In main.py
+
 @app.post("/ask/{chat_id}", response_class=RedirectResponse)
 async def ask_question(chat_id: str, question: str = Form(...)):
     """
@@ -118,7 +120,10 @@ async def ask_question(chat_id: str, question: str = Form(...)):
     chat_session = conversations.get(chat_id)
 
     if qa_chain and chat_session:
-        result = qa_chain({"query": question})
+        # Use .invoke() instead of calling the chain directly
+        result = qa_chain.invoke({"query": question})
+        
+        # The rest of the code remains the same, as the output structure is compatible
         answer = result['result']
         
         # Update conversation history
