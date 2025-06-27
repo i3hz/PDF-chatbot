@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Planet - PDF Q&A</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --body-bg: #f5f7fa;
+            --main-bg: #ffffff;
+            --header-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-light: #64748b;
+            --accent-color: #3b82f6;
+            --user-avatar-bg: #9333ea;
+            --bot-avatar-bg: #16a34a;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden; /* Prevents scrollbars on the body */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--body-bg);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+        }
+
+        .chat-container {
+            /* --- THIS IS THE KEY CHANGE --- */
+            /* We use viewport units to make it fill most of the screen */
+            width: 100vw;
+            height: 100vh;
+            /* Add a max-width for extremely large monitors */
+            max-width: 1600px; 
+            /* ----------------------------- */
+
+            background-color: var(--main-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Header */
+        header {
+            background-color: var(--header-bg);
+            color: var(--text-dark);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .logo-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: var(--bot-avatar-bg);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .file-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #f1f5f9;
+            color: var(--text-light);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .upload-btn {
+            background-color: transparent;
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-btn:hover {
+            background-color: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        /* Main Chat Area */
+        .chat-messages {
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 1rem;
+            max-width: 85%;
+        }
+
+        .user-message {
+            align-self: flex-start;
+        }
+
+        .bot-response {
+            align-self: flex-start;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+
+        .avatar.user-avatar { background-color: var(--user-avatar-bg); }
+        .avatar.bot-avatar { background-color: var(--bot-avatar-bg); }
+
+        .message-content {
+            padding-top: 0.25rem;
+        }
+        
+        .message-content p {
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        /* Message Input Area */
+        .chat-input {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .chat-input form {
+            display: flex;
+            align-items: center;
+            background-color: var(--main-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.5rem;
+        }
+        
+        .chat-input form:focus-within {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            border: none;
+            background: transparent;
+            padding: 0.75rem;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+        }
+
+        .chat-input button {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <span class="logo-icon">ai</span>
+                <span>ai planet</span>
+            </div>
+            <div class="header-controls">
+                {% if pdf_filename %}
+                    <div class="file-status">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/></svg>
+                        <span>{{ pdf_filename }}</span>
+                    </div>
+                {% endif %}
+                
+                <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+                    <input type="file" name="pdf_file" id="pdf-input" style="display: none;" accept=".pdf">
+                    <button type="button" id="upload-button" class="upload-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/></svg>
+                        <span>Upload PDF</span>
+                    </button>
+                </form>
+            </div>
+        </header>
+
+        <!-- Chat Messages -->
+        <main class="chat-messages" id="chat-messages">
+            {% if not conversation %}
+            <div class="message bot-response">
+                <div class="avatar bot-avatar">ai</div>
+                <div class="message-content">
+                    <p>Hello! Upload a PDF to start asking questions.</p>
+                </div>
+            </div>
+            {% endif %}
+
+            {% for message in conversation %}
+                <div class="message user-message">
+                    <div class="avatar user-avatar">S</div>
+                    <div class="message-content">
+                        <p>{{ message.user }}</p>
+                    </div>
+                </div>
+                <div class="message bot-response">
+                    <div class="avatar bot-avatar">ai</div>
+                    <div class="message-content">
+                        <p>{{ message.bot | safe }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </main>
+        
+        <!-- Input Area -->
+        <div class="chat-input">
+            {% if chat_id %}
+                <form action="/ask/{{ chat_id }}" method="post" id="message-form">
+                    <input type="text" name="question" placeholder="Send a message…" autocomplete="off" required>
+                    <button type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send" style="color: var(--accent-color);"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </form>
+            {% else %}
+                 <form>
+                    <input type="text" placeholder="Upload a PDF to activate chat" disabled>
+                 </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const uploadButton = document.getElementById('upload-button');
+            const pdfInput = document.getElementById('pdf-input');
+            const uploadForm = document.getElementById('upload-form');
+
+            if (uploadButton) {
+                uploadButton.addEventListener('click', () => {
+                    pdfInput.click();
+                });
+            }
+
+            if (pdfInput) {
+                pdfInput.addEventListener('change', () => {
+                    if (pdfInput.files.length > 0) {
+                        const buttonText = uploadButton.querySelector('span');
+                        if(buttonText) {
+                            buttonText.textContent = 'Uploading...';
+                        }
+                        uploadButton.disabled = true;
+                        
+                        uploadForm.submit();
+                    }
+                });
+            }
+
+            const chatMessages = document.getElementById('chat-messages');
+            if (chatMessages) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html>
