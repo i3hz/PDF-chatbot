@@ -4,31 +4,23 @@ from fastapi import FastAPI, Request, Form, File, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
-
-# LangChain components
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 
-# Load environment variables from .env file
 load_dotenv()
 
-# Initialize FastAPI app
 app = FastAPI()
 
-# Setup templates
 templates = Jinja2Templates(directory="templates")
 
-# Define folders for uploads and vector stores
 UPLOAD_FOLDER = 'uploads'
 VECTOR_STORE_FOLDER = 'vector_stores'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(VECTOR_STORE_FOLDER, exist_ok=True)
 
-# In-memory storage for conversation history.
-# In a production app, you'd use a database (e.g., Redis, PostgreSQL).
 conversations = {}
 
 def get_qa_chain(chat_id: str):
@@ -65,7 +57,6 @@ async def handle_upload(pdf_file: UploadFile = File(...)):
     Handles PDF upload, processing, and redirection to the chat page.
     """
     if not pdf_file.filename.endswith('.pdf'):
-        # You might want to return an error to the user here
         return RedirectResponse(url="/", status_code=303)
 
     chat_id = str(uuid.uuid4())
@@ -75,7 +66,6 @@ async def handle_upload(pdf_file: UploadFile = File(...)):
         content = await pdf_file.read()
         f.write(content)
 
-    # --- LangChain Processing ---
     loader = PyPDFLoader(filepath)
     documents = loader.load()
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
