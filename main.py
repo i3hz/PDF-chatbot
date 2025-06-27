@@ -109,7 +109,6 @@ async def ask_question(chat_id: str, question: str = Form(...)):
         
         answer = result['result']
         
-        # Update conversation history
         chat_session['history'].append({'user': question, 'bot': answer})
     
     return RedirectResponse(url=f"/chat/{chat_id}", status_code=303)

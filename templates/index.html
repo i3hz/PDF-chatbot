@@ -28,7 +28,7 @@
 
         html, body {
             height: 100%;
-            overflow: hidden; /* Prevents scrollbars on the body */
+            overflow: hidden;
         }
 
         body {
@@ -42,13 +42,9 @@
         }
 
         .chat-container {
-            /* --- THIS IS THE KEY CHANGE --- */
-            /* We use viewport units to make it fill most of the screen */
             width: 100vw;
             height: 100vh;
-            /* Add a max-width for extremely large monitors */
             max-width: 1600px; 
-            /* ----------------------------- */
 
             background-color: var(--main-bg);
             border-radius: 16px;
@@ -59,7 +55,6 @@
             border: 1px solid var(--border-color);
         }
 
-        /* Header */
         header {
             background-color: var(--header-bg);
             color: var(--text-dark);
@@ -128,7 +123,6 @@
             border-color: #cbd5e1;
         }
 
-        /* Main Chat Area */
         .chat-messages {
             flex-grow: 1;
             padding: 1.5rem;
@@ -177,7 +171,6 @@
             white-space: pre-wrap;
         }
 
-        /* Message Input Area */
         .chat-input {
             padding: 1rem 1.5rem;
             border-top: 1px solid var(--border-color);
@@ -223,7 +216,6 @@
 <body>
 
     <div class="chat-container">
-        <!-- Header -->
         <header>
             <div class="logo">
                 <span class="logo-icon">ai</span>
@@ -247,7 +239,6 @@
             </div>
         </header>
 
-        <!-- Chat Messages -->
         <main class="chat-messages" id="chat-messages">
             {% if not conversation %}
             <div class="message bot-response">
@@ -274,7 +265,6 @@
             {% endfor %}
         </main>
         
-        <!-- Input Area -->
         <div class="chat-input">
             {% if chat_id %}
                 <form action="/ask/{{ chat_id }}" method="post" id="message-form">
