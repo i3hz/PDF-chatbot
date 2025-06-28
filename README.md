@@ -1,5 +1,5 @@
 # Chat with your PDF - A RAG Application
-      ![Application Screenshot](assets/screenshot.png)
+      ![Application Screenshot](https://raw.githubusercontent.com/i3hz/PDF-chatbot/main/assets/screenshot.png)
   
 This project is a web application that allows you to upload a PDF document and have an interactive chat with it. It uses a powerful AI technique called **Retrieval-Augmented Generation (RAG)** to provide answers based exclusively on the content of your document.
 
