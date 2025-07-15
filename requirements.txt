@@ -14,7 +14,7 @@ openai
 python-multipart
 # PDF Loader
 pypdf
-
+google-search-results
 # Vector DB
 faiss-cpu
 
