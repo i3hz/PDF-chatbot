@@ -1,5 +1,3 @@
-#add system prompt and run only when context is provided
-# add serp api
 import os
 import uuid
 from fastapi import FastAPI, Request, Form, File, UploadFile
@@ -11,6 +9,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate # <-- Import PromptTemplate
 
 load_dotenv()
 
@@ -27,7 +26,8 @@ conversations = {}
 
 def get_qa_chain(chat_id: str):
     """
-    Looks up the vector store for the given chat_id and creates a QA chain.
+    Looks up the vector store for the given chat_id and creates a QA chain
+    with a custom prompt to handle out-of-context questions.
     """
     vector_store_path = os.path.join(VECTOR_STORE_FOLDER, chat_id)
     if not os.path.exists(vector_store_path):
@@ -37,12 +37,32 @@ def get_qa_chain(chat_id: str):
     vector_store = FAISS.load_local(vector_store_path, embeddings, allow_dangerous_deserialization=True)
     
     retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 3})
+
+
+    prompt_template = """You are a helpful assistant designed to answer questions based on a provided document.
+    Use the following pieces of retrieved context to answer the question.
+    If the question cannot be answered from the context, politely state that the document does not contain the necessary information.
+    Do not make up an answer or use external knowledge outside of the provided document.
+
+    Context:
+    {context}
+
+    Question:
+    {question}
+
+    Helpful Answer:"""
+
+    PROMPT = PromptTemplate(
+        template=prompt_template, input_variables=["context", "question"]
+    )
     
+
     qa_chain = RetrievalQA.from_chain_type(
         llm=ChatOpenAI(model_name="gpt-4-turbo", temperature=0.7),
         chain_type="stuff",
         retriever=retriever,
-        return_source_documents=True
+        return_source_documents=True,
+        chain_type_kwargs={"prompt": PROMPT}
     )
     return qa_chain
 
@@ -108,9 +128,7 @@ async def ask_question(chat_id: str, question: str = Form(...)):
 
     if qa_chain and chat_session:
         result = qa_chain.invoke({"query": question})
-        
         answer = result['result']
-        
         chat_session['history'].append({'user': question, 'bot': answer})
     
     return RedirectResponse(url=f"/chat/{chat_id}", status_code=303)
