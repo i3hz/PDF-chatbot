@@ -1,0 +1,25 @@
+fastapi
+uvicorn[standard]
+jinja2
+python-dotenv
+
+# LangChain + Tools
+langchain
+langchain-community
+langchain-openai
+langchain-core
+
+# Embeddings, LLMs
+openai
+
+# PDF Loader
+pypdf
+
+# Vector DB
+faiss-cpu
+
+# Web scraping / search tool
+serpapi
+
+# Jinja2 templates rendering
+aiofiles
