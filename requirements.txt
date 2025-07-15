@@ -11,7 +11,7 @@ langchain-core
 
 # Embeddings, LLMs
 openai
-
+python-multipart
 # PDF Loader
 pypdf
 
